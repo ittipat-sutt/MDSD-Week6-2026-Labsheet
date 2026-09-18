@@ -86,11 +86,11 @@ https://api.openweathermap.org/data/2.5/weather?q=Bangkok&appid=YOUR_API_KEY&uni
 
 > ✅ **Checkpoint 1.2** บันทึกด้านล่างว่านักศึกษาเลือกทดสอบกรณีใด คาดการณ์ Status Code ไว้ว่าอะไร และ Status Code จริงที่ได้คืออะไร (ตรงหรือไม่ตรงกับที่คาดไว้) พร้อมอธิบายว่าผลลัพธ์ที่ได้ตรงกับช่วง Status Code ใดตามตารางในบทเรียนหัวข้อ 6.3
 
-```text
+``text
 <img width="1915" height="1071" alt="image" src="https://github.com/user-attachments/assets/dafa57da-f6d4-45ce-a4fc-9c8e295caa7d" />
 <img width="1003" height="547" alt="image" src="https://github.com/user-attachments/assets/99003e8a-3985-43c2-918b-2422956f21e0" />
 
-```
+``
 ---
 
 ## ส่วนที่ 2: สร้าง Model Class และเรียก API ด้วย http Package
