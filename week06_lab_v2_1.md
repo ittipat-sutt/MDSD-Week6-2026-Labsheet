@@ -77,20 +77,34 @@ https://api.openweathermap.org/data/2.5/weather?q=Bangkok&appid=YOUR_API_KEY&uni
 
 > ✅ **Checkpoint 1.1** ถ่ายภาพหน้าจอ Postman ที่แสดง Status Code `200` พร้อม Response Body แบบเต็ม จากนั้นให้เขียนระบุใน ว่า key ใดใน JSON ที่คาดว่าจะต้องใช้แสดงผลในแอป (เช่น ชื่อเมือง, อุณหภูมิ, คำอธิบายสภาพอากาศ)
 
-```text
-บันทึกรูปและคำตอบที่นี่
-```
+<img width="1915" height="1071" alt="image" src="https://github.com/user-attachments/assets/dafa57da-f6d4-45ce-a4fc-9c8e295caa7d" />
+<img width="1003" height="547" alt="image" src="https://github.com/user-attachments/assets/99003e8a-3985-43c2-918b-2422956f21e0" />
+
+**Key ใน JSON ที่คาดว่าจะต้องใช้แสดงผลในแอป:**
+1. `name`: ชื่อเมือง (เช่น `"กรุงเทพมหานคร"`) อยู่ที่ระดับบนสุด (Top-level) ของ JSON
+2. `main.temp`: อุณหภูมิปัจจุบัน (เช่น `30.51`) อยู่ใน object ย่อย `main` ซึ่งต้อง cast เป็น num ก่อนแปลงเป็น double
+3. `main.feels_like`: อุณหภูมิความรู้สึกจริง (เช่น `37.51`) อยู่ใน object ย่อย `main`
+4. `weather[0].description`: คำอธิบายสภาพอากาศ (เช่น `"ฝนปานกลาง"`) ซึ่ง `weather` เป็น Array/List ต้องดึงสมาชิกตัวแรก `[0]` แล้วเข้าถึง key `description`
+
 ### ขั้นตอนที่ 1.2 — 🧠 คิดเอง/ออกแบบเอง
 
 ออกแบบการทดสอบกรณีผิดพลาด (error case) อย่างน้อย 1 กรณี โดยเปลี่ยนค่าพารามิเตอร์บางตัวใน Request ให้เป็นสิ่งที่คาดว่าจะทำให้เซิร์ฟเวอร์ตอบกลับด้วย error (ตัวอย่างแนวทางที่เลือกได้ เช่น เปลี่ยนชื่อเมืองเป็นชื่อที่ไม่มีอยู่จริง, ใส่ `appid` ผิด, หรือลบ `appid` ออกไปเลย) **ก่อนกด Send ให้เขียนคาดการณ์ ก่อนว่า นักศึกษาคิดว่า Status Code จะเป็นอะไร** แล้วจึงทดสอบจริงเพื่อเทียบกับที่คาดไว้
 
 > ✅ **Checkpoint 1.2** บันทึกด้านล่างว่านักศึกษาเลือกทดสอบกรณีใด คาดการณ์ Status Code ไว้ว่าอะไร และ Status Code จริงที่ได้คืออะไร (ตรงหรือไม่ตรงกับที่คาดไว้) พร้อมอธิบายว่าผลลัพธ์ที่ได้ตรงกับช่วง Status Code ใดตามตารางในบทเรียนหัวข้อ 6.3
 
-``text
-<img width="1915" height="1071" alt="image" src="https://github.com/user-attachments/assets/dafa57da-f6d4-45ce-a4fc-9c8e295caa7d" />
-<img width="1003" height="547" alt="image" src="https://github.com/user-attachments/assets/99003e8a-3985-43c2-918b-2422956f21e0" />
-
-``
+**บันทึกผลการทดสอบ Error Case:**
+- **กรณีที่เลือกทดสอบ:** เปลี่ยนพารามิเตอร์ชื่อเมืองเป็นชื่อเมืองที่ไม่มีอยู่จริงในระบบ เช่น `q=NonExistentCityXYZ999`
+  (URL: `https://api.openweathermap.org/data/2.5/weather?q=NonExistentCityXYZ999&appid=YOUR_API_KEY&units=metric&lang=th`)
+- **คาดการณ์ Status Code ก่อนส่งคำขอ:** คาดว่าจะได้รับ `404 Not Found` เนื่องจากเซิร์ฟเวอร์ไม่พบ Resource ของเมืองดังกล่าว
+- **Status Code จริงที่ได้รับจากการทดสอบ:** ได้รับ `404 Not Found` พร้อม Response Body:
+  ```json
+  {
+    "cod": "404",
+    "message": "city not found"
+  }
+  ```
+  *(ผลลัพธ์ตรงกับที่คาดการณ์ไว้)*
+- **อธิบายช่วง Status Code:** อยู่ในช่วง **`4xx (Client Error)`** ตามตารางในบทเรียนหัวข้อ 6.3 ซึ่งหมายถึงคำขอที่ส่งมาจากฝั่ง Client มีข้อผิดพลาด ในกรณีนี้คือ Client ระบุชื่อ Resource ที่เซิร์ฟเวอร์ค้นหาไม่พบบนฐานข้อมูล จึงตอบกลับด้วยรหัส 404 (แตกต่างจาก `5xx Server Error` ที่เป็นความล้มเหลวภายในของเซิร์ฟเวอร์)
 ---
 
 ## ส่วนที่ 2: สร้าง Model Class และเรียก API ด้วย http Package
