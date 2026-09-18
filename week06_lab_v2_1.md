@@ -486,14 +486,20 @@ GET https://fakestoreapi.com/products
 
 ไม่ว่าจะเลือกแบบไหน เป้าหมายคือต้องเห็น **ผลลัพธ์จริงจาก Fake Store API** ปรากฏขึ้นมา  ถ้ารันแล้วเจอ error หรือโค้ดจาก Gemini ผิดพลาด (เช่น import ขาด, ชื่อ field ไม่ตรงกับ JSON จริง) ให้จดบันทึกข้อความ error และวิธีแก้ไขไว้ในด้านล่าง
 
-```text
-บันทึก error และการแก้ไขที่นี่
-```
+``text
+ไม่พบ error หลังตรวจสอบการ import package http, ชนิดข้อมูล price ที่แปลงผ่าน num เป็น double และชื่อ field ให้ตรงกับ JSON จริงของ Fake Store API โดยสามารถเรียก fetchAiProducts() และ fetchAiProductById(1) ได้สำเร็จ
+``
 
 > ✅ **Checkpoint 4.2** ถ่ายภาพหน้าจอ Debug Console ที่แสดงผลลัพธ์จริงจากการเรียก `fetchAiProducts()` (เช่น รายการสินค้าที่ print ออกมา) 
-```text
-บันทึกรูปที่นี่
-```
+``text
+<img width="402" height="53" alt="image" src="https://github.com/user-attachments/assets/a636aeaa-9d7d-47b1-90d3-ae59a7d5729c" />
+<img width="802" height="547" alt="image" src="https://github.com/user-attachments/assets/152224bf-e1cc-45fc-8d1a-02a49d515784" />
+<img width="932" height="581" alt="image" src="https://github.com/user-attachments/assets/63606e66-2654-462a-a31b-d9156a1f8d13" />
+<img width="937" height="587" alt="image" src="https://github.com/user-attachments/assets/93fa79ea-fa84-409d-a3b1-117436f750a6" />
+<img width="782" height="576" alt="image" src="https://github.com/user-attachments/assets/298e0857-f09b-4a0b-87e1-363d62bad3ec" />
+<img width="913" height="80" alt="image" src="https://github.com/user-attachments/assets/0cdb330a-c3df-4097-985f-b0d1159e6f0b" />
+
+``
 
 ---
 
@@ -552,9 +558,10 @@ Future<Weather> fetchWeatherWithDio(String city) async {
 2. รูปแบบการเขียน query parameters (`queryParameters: {...}`) ต่างจากการต่อ string URL เองแบบที่ทำใน `WeatherService` (ขั้นตอนที่ 2.3) 
 
 > ✅ **Checkpoint 5.1** ถ่ายภาพหน้าจอ Debug Console ที่แสดงผลลัพธ์จริงจากการเรียก `fetchWeatherWithDio()` (ค่าทั้ง 4 ฟิลด์ของ `Weather` ที่ print ออกมา หรือแสดงผลบนหน้าจอถ้าเลือกแบบที่ 2)
-```text
-บันทึกรูปที่นี่
-```
+``text
+<img width="562" height="131" alt="image" src="https://github.com/user-attachments/assets/2fd3076a-6e11-484d-8d4d-35ff88706d28" />
+
+``+
 ### ขั้นตอนที่ 5.4 — 🧠 คิดเอง/ออกแบบเอง
 
 `DioException` มีหลายชนิด (`DioExceptionType`) แต่โค้ดในขั้นตอนที่ 5.2 จัดการเฉพาะ `connectionTimeout` ด้านล่างเป็นตัวอย่างการเพิ่มเงื่อนไขให้อีก 1 ชนิด (`badResponse`) ให้ดูเป็นแนวทาง จากนั้นให้เพิ่มเงื่อนไข `else if` อีกอย่างน้อย 1 ชนิดด้วยตัวเอง โดยเลือกจาก `DioExceptionType.receiveTimeout` หรือ `DioExceptionType.connectionError` (ห้ามซ้ำกับ `badResponse` ที่ให้เป็นตัวอย่างแล้ว) พร้อมข้อความแจ้งเตือนภาษาไทยที่เหมาะสมกับสาเหตุนั้นโดยเฉพาะ (ค้นคว้าความหมายของแต่ละชนิดได้จากเอกสารของแพ็กเกจ `dio` บน pub.dev)
@@ -575,15 +582,27 @@ Future<Weather> fetchWeatherWithDio(String city) async {
 
 > ✅ **Checkpoint 5.2** เปรียบเทียบสั้น ๆ ระหว่าง `http` กับ `dio` อย่างน้อย 3 ประเด็น โดยอ้างอิงจากสิ่งที่สังเกตได้จริงตอนทดลองในขั้นตอนที่ 5.3 เช่น การแปลง JSON อัตโนมัติ, การกำหนด Query Parameters, และรูปแบบการจัดการ Exception (`DioException` เทียบกับการดักจับหลายชนิดแยกกันแบบ `http`)
 
-```text
-บันทึกคำตอบที่นี่
-```
+``text
+1. การแปลง JSON: http คืน response.body เป็น String จึงต้องเรียก jsonDecode() เอง ส่วน Dio แปลง JSON เป็น Map/List ให้อัตโนมัติผ่าน response.data
+
+2. Query Parameters: http ต้องสร้าง Uri และกำหนด query parameters เอง ส่วน Dio ระบุเป็น Map ใน queryParameters ทำให้อ่านและแก้ไขได้ง่ายกว่า
+
+3. การจัดการข้อผิดพลาด: http ต้องดักจับ TimeoutException, ClientException และ FormatException แยกกัน ส่วน Dio ใช้ DioException เพียงชนิดเดียว แล้วตรวจสาเหตุเพิ่มผ่าน DioExceptionType เช่น connectionTimeout หรือ badResponse
+``
 >
 > ✅ **Checkpoint 5.3** แสดงโค้ดเงื่อนไข `DioExceptionType` เพิ่มเติมที่เขียนเองในขั้นตอนที่ 5.4 
 
-```text
-บันทึกคำตอบที่นี่
-```
+``text
+else if (e.type == DioExceptionType.receiveTimeout) {
+  throw Exception(
+    'รอรับข้อมูลจากเซิร์ฟเวอร์นานเกินไป กรุณาลองใหม่อีกครั้ง',
+  );
+} else if (e.type == DioExceptionType.connectionError) {
+  throw Exception(
+    'ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้ กรุณาตรวจสอบการเชื่อมต่อ',
+  );
+}
+``
 ---
 
 ## ส่วนที่ 7: ต่อยอดเข้าสู่โปรเจกต์ Campus Marketplace
